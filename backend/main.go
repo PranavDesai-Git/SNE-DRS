@@ -28,6 +28,14 @@ func main() {
 	}
 
 	r := chi.NewRouter()
+	
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			log.Printf("[Backend] %s %s", req.Method, req.RequestURI)
+			next.ServeHTTP(w, req)
+		})
+	})
+
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},

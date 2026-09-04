@@ -65,9 +65,12 @@
   .table-container {
     width: 100%;
     overflow-x: auto;
+    overflow-y: auto;
     border: 1px solid var(--secondary);
     border-radius: 4px;
     background-color: var(--background);
+    flex-shrink: 0;
+    max-height: 400px;
   }
 
   .gov-table {

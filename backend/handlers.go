@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -29,6 +30,7 @@ func getHabitations(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(results)
+	log.Printf("[Backend] Returned %d habitations", len(results))
 }
 
 func getRiskZones(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +82,7 @@ func getRiskZones(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+	log.Printf("[Backend] Returned %d risk zone features", len(features))
 }
 
 func getSites(w http.ResponseWriter, r *http.Request) {
@@ -106,4 +109,5 @@ func getSites(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(results)
+	log.Printf("[Backend] Returned %d sites", len(results))
 }
