@@ -1,0 +1,3 @@
+id,name,lat,lng,capacity,suitability_score,land_cover_type,distance_to_road_km
+SITE001,Bahjani Chapori,26.5210,91.0340,1200,7.8,grassland,1.2
+SITE002,Kalgachia Uplands,26.4780,90.9560,850,6.5,cropland,2.4

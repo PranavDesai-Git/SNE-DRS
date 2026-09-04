@@ -2,10 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	_ "github.com/mattn/go-sqlite3" // Important! Registers the sqlite3 driver
 )
 
 var db *sql.DB
@@ -18,6 +22,11 @@ func main() {
 	}
 	defer db.Close()
 
+	if len(os.Args) > 1 && os.Args[1] == "import" {
+		RunImport(db)
+		return
+	}
+
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -27,4 +36,7 @@ func main() {
 	r.Get("/habitations", getHabitations)
 	r.Get("/risk-zones", getRiskZones)
 	r.Get("/sites", getSites)
+
+	fmt.Println("Server running on http://localhost:8080")
+	http.ListenAndServe(":8080", r)
 }

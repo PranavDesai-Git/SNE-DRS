@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "RZ001",
+        "risk_score": 8.7,
+        "tier": "Immediate",
+        "population": 3200,
+        "hazard_type": "flood"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [90.9850, 26.4500],
+            [90.9900, 26.4500],
+            [90.9900, 26.4550],
+            [90.9850, 26.4550],
+            [90.9850, 26.4500]
+          ]
+        ]
+      }
+    }
+  ]
+}
