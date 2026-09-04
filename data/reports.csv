@@ -1,0 +1,5 @@
+id,lat,lng,category,description,photo_url,reported_at,status,reviewed_by,reviewed_at
+REP001,25.2720,91.7330,landslide,Road completely washed out near Cherrapunji,,2026-09-05T08:00:00Z,confirmed,admin1,2026-09-05T08:15:00Z
+REP002,26.9520,94.2450,flood,Brahmaputra overflowed banks in Majuli,,2026-09-05T09:00:00Z,confirmed,admin2,2026-09-05T09:10:00Z
+REP003,22.1650,88.8050,tornado,Cyclone winds damaging structures in Gosaba,,2026-09-05T10:00:00Z,unconfirmed,,
+REP004,23.2450,69.6650,earthquake,Building collapses reported in Bhuj,,2026-09-05T11:00:00Z,confirmed,admin1,2026-09-05T11:20:00Z

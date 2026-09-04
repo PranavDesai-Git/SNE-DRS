@@ -6,6 +6,13 @@
     { label: 'Safe Zone', class: 'safe' },
     { label: 'Habitation', class: 'habitation' }
   ];
+
+  const hazardIcons = [
+    { label: 'Landslide', icon: '⛰️' },
+    { label: 'Flood', icon: '🌊' },
+    { label: 'Earthquake', icon: '🌍' },
+    { label: 'Tornado', icon: '🌪️' }
+  ];
 </script>
 
 <div class="gov-map-legend">
@@ -15,6 +22,16 @@
       <div class="legend-item">
         <span class="color-box {item.class}"></span>
         <span class="legend-label">{item.label}</span>
+      </div>
+    {/each}
+  </div>
+
+  <h4 class="legend-title" style="margin-top: 1rem;">Disaster Types</h4>
+  <div class="legend-items" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+    {#each hazardIcons as hazard}
+      <div class="legend-item">
+        <span style="font-size: 1.1rem; width: 20px; text-align: center;">{hazard.icon}</span>
+        <span class="legend-label">{hazard.label}</span>
       </div>
     {/each}
   </div>

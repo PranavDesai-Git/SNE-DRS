@@ -86,6 +86,31 @@
     }
   });
 
+  let reports = [];
+  let currentRoute = null;
+
+  async function loadReports() {
+    try {
+      const res = await fetch('http://localhost:8080/reports');
+      if (res.ok) reports = await res.json() || [];
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadRoute(habId) {
+    try {
+      const res = await fetch(`http://localhost:8080/routes?habitation_id=${habId}`);
+      if (res.ok) currentRoute = await res.json() || null;
+    } catch (e) { console.error(e); }
+  }
+
+  $: if (selectedMode === 'm2' && selectedHabitation) {
+    loadRoute(selectedHabitation.id);
+  }
+  
+  $: if (selectedMode === 'm3') {
+    loadReports();
+  }
+
   let tableHeaders = [
     { key: 'name', label: 'Habitation', sortable: true },
     { key: 'district', label: 'District', sortable: true },
@@ -152,13 +177,54 @@
         </div>
         {/if}
       {:else if selectedMode === 'm2'}
-        <h4>Pre-Disaster Routing</h4>
-        <p class="subtitle">Waiting for threshold trigger...</p>
-        <!-- Mode 2 Routing & Capacity matching will go here -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h4>Pre-Disaster Routing</h4>
+        </div>
+        <p class="subtitle">Select a habitation to view evacuation routes.</p>
+        
+        <DataTable 
+          headers={tableHeaders} 
+          data={habitations} 
+          sortable={true} 
+          onRowClick={handleSelectHabitation}
+          selectedId={selectedHabitation?.id}
+        />
+
+        {#if currentRoute && selectedHabitation && assignedSite}
+        <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.4); border-radius: 4px;">
+          <h5>Evacuation Route Generated</h5>
+          <p><strong>From:</strong> {selectedHabitation.name}</p>
+          <p><strong>To:</strong> {assignedSite.name}</p>
+          <p><strong>Status:</strong> Risk zones avoided</p>
+          <Button fullWidth style="margin-top: 0.5rem;">Deploy Resources</Button>
+        </div>
+        {/if}
+
       {:else if selectedMode === 'm3'}
-        <h4>Active Incidents</h4>
-        <p class="subtitle">Awaiting citizen reports...</p>
-        <!-- Mode 3 Real-time citizen reports will go here -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h4>Active Incidents</h4>
+          <Button on:click={loadReports}>Refresh</Button>
+        </div>
+        <p class="subtitle">Real-time citizen reports and SOS signals.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+          {#each reports as report}
+            <div style="padding: 1rem; border: 1px solid var(--color-redzone); border-radius: 4px; background: rgba(135, 35, 30, 0.1);">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>{report.category.toUpperCase()}</strong>
+                <small>{new Date(report.reported_at).toLocaleString()}</small>
+              </div>
+              <p style="margin-top: 0.5rem;">{report.description}</p>
+              <div style="margin-top: 0.5rem; display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Status: {report.status}</span>
+                <Button>Dispatch Team</Button>
+              </div>
+            </div>
+          {/each}
+          {#if reports.length === 0}
+            <p>No active reports.</p>
+          {/if}
+        </div>
       {/if}
     </div>
   </aside>
@@ -177,7 +243,10 @@
     <Map 
       {riskZones} 
       {sites} 
-      {habitations} 
+      {habitations}
+      {reports}
+      {currentRoute}
+      {selectedMode}
       onHabitationClick={handleSelectHabitation} 
     />
     <div class="legend-wrapper">

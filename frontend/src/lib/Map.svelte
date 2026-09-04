@@ -7,6 +7,9 @@
   export let riskZones = null;
   export let sites = [];
   export let habitations = [];
+  export let reports = [];
+  export let currentRoute = null;
+  export let selectedMode = 'm1';
   export let onHabitationClick = null;
   
   let mapContainer;
@@ -17,6 +20,8 @@
   let waypointMarker;
   let siteMarkers = [];
   let habitationMarkers = [];
+  let reportMarkers = [];
+  let routeLayer = null;
 
   function getColor(tier) {
     if (!tier) return '#8F7518';
@@ -61,6 +66,55 @@
 
   $: if (habitations) {
     renderHabitations();
+  }
+
+  $: if (currentRoute || selectedMode) {
+    renderRoute();
+  }
+
+  $: if (reports || selectedMode) {
+    renderReports();
+  }
+
+  function renderRoute() {
+    if (!map || !leafletBase) return;
+    if (routeLayer) {
+      routeLayer.remove();
+      routeLayer = null;
+    }
+    if (selectedMode !== 'm2' || !currentRoute) return;
+
+    routeLayer = leafletBase.geoJSON(currentRoute, {
+      style: {
+        color: '#156932',
+        weight: 4,
+        dashArray: '10, 10',
+        lineCap: 'round'
+      }
+    }).addTo(map);
+  }
+
+  function renderReports() {
+    if (!map || !leafletBase) return;
+    reportMarkers.forEach(m => m.remove());
+    reportMarkers = [];
+
+    if (selectedMode !== 'm3' || !reports) return;
+
+    reports.forEach(rep => {
+      const icon = leafletBase.divIcon({
+        className: 'custom-report-icon',
+        html: `<div style="background-color: #87231E; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">!</div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
+      const m = leafletBase.marker([rep.lat, rep.lng], { icon: icon })
+        .bindPopup(`<h5>${rep.category.toUpperCase()}</h5><p>${rep.description}</p><em>Status: ${rep.status}</em>`)
+        .addTo(map);
+
+      reportMarkers.push(m);
+    });
   }
 
   function renderHabitations() {
@@ -132,11 +186,34 @@
       },
       onEachFeature: function(feature, layer) {
         if (feature.properties) {
+          const hazardType = feature.properties.hazard_type || 'Unknown';
+          const icons = {
+            'landslide': '⛰️ Landslide',
+            'flood': '🌊 Flood',
+            'earthquake': '🌍 Earthquake',
+            'tornado': '🌪️ Tornado'
+          };
+          const emojiMap = {
+            'landslide': '⛰️',
+            'flood': '🌊',
+            'earthquake': '🌍',
+            'tornado': '🌪️'
+          };
+          const hazardDisplay = icons[hazardType.toLowerCase()] || hazardType;
+          const emoji = emojiMap[hazardType.toLowerCase()] || '⚠️';
+
           layer.bindPopup(
             `<h5>Zone ID: ${feature.properties.zone_id}</h5>` +
+            `<strong>Hazard:</strong> ${hazardDisplay}<br/>` +
             `Tier: ${feature.properties.tier}<br/>` +
             `Risk Score: ${feature.properties.risk_score}`
           );
+
+          layer.bindTooltip(emoji, {
+            permanent: true,
+            direction: 'center',
+            className: 'hazard-emoji-tooltip'
+          });
         }
       }
     }).addTo(map);
@@ -218,5 +295,13 @@
     border: 1px solid var(--secondary);
     border-radius: 4px;
     z-index: 1;
+  }
+  
+  :global(.hazard-emoji-tooltip) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 24px;
+    text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
   }
 </style>

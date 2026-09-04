@@ -18,6 +18,7 @@ func RunImport(db *sql.DB) {
 	importHabitations(db, "../data/habitations.csv")
 	importSites(db, "../data/sites.csv")
 	importRiskZones(db, "../data/risk-zones.geojson")
+	importReports(db, "../data/reports.csv")
 
 	fmt.Println("Import completed successfully!")
 }
@@ -76,6 +77,23 @@ func createTables(db *sql.DB) {
 	_, err = db.Exec(riskZonesTable)
 	if err != nil {
 		log.Fatal("Failed to create risk_zones table:", err)
+	}
+	reportsTable := `
+	CREATE TABLE IF NOT EXISTS reports (
+		id TEXT PRIMARY KEY,
+		lat FLOAT,
+		lng FLOAT,
+		category TEXT,
+		description TEXT,
+		photo_url TEXT,
+		reported_at TEXT,
+		status TEXT,
+		reviewed_by TEXT,
+		reviewed_at TEXT
+	);`
+	_, err = db.Exec(reportsTable)
+	if err != nil {
+		log.Fatal("Failed to create reports table:", err)
 	}
 	fmt.Println("Tables checked/created.")
 }
@@ -162,6 +180,41 @@ func importSites(db *sql.DB, filepath string) {
 		}
 	}
 	fmt.Printf("Imported %d sites.\n", len(records)-1)
+}
+
+func importReports(db *sql.DB, filepath string) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		fmt.Printf("Skipping reports (file not found): %s\n", filepath)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		log.Fatal("Failed to read CSV:", err)
+	}
+
+	stmt, err := db.Prepare("INSERT OR REPLACE INTO reports (id, lat, lng, category, description, photo_url, reported_at, status, reviewed_by, reviewed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		lat, _ := strconv.ParseFloat(record[1], 64)
+		lng, _ := strconv.ParseFloat(record[2], 64)
+
+		_, err := stmt.Exec(record[0], lat, lng, record[3], record[4], record[5], record[6], record[7], record[8], record[9])
+		if err != nil {
+			log.Printf("Failed to insert report %s: %v\n", record[0], err)
+		}
+	}
+	fmt.Printf("Imported %d reports.\n", len(records)-1)
 }
 
 func importRiskZones(db *sql.DB, filepath string) {

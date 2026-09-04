@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"math"
 	"os"
 	"sort"
 	"strconv"

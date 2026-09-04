@@ -111,3 +111,84 @@ func getSites(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(results)
 	log.Printf("[Backend] Returned %d sites", len(results))
 }
+
+func getReports(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT id, lat, lng, category, description, photo_url, reported_at, status, reviewed_by, reviewed_at FROM reports ORDER BY reported_at DESC")
+	if err != nil {
+		http.Error(w, "Database query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var results []Report
+	for rows.Next() {
+		var rep Report
+		err := rows.Scan(&rep.ID, &rep.Lat, &rep.Lng, &rep.Category, &rep.Description, &rep.PhotoURL, &rep.ReportedAt, &rep.Status, &rep.ReviewedBy, &rep.ReviewedAt)
+		if err != nil {
+			continue
+		}
+		results = append(results, rep)
+	}
+
+	if results == nil {
+		results = []Report{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+	log.Printf("[Backend] Returned %d reports", len(results))
+}
+
+func getRoutes(w http.ResponseWriter, r *http.Request) {
+	habitationID := r.URL.Query().Get("habitation_id")
+	if habitationID == "" {
+		http.Error(w, "Missing habitation_id", http.StatusBadRequest)
+		return
+	}
+
+	// Mocking a route from the habitation to a safe site
+	// In a real app, this would use osmnx/networkx or similar for risk-weighted routing
+	// We'll just return a mock GeoJSON LineString
+	var hLat, hLng float64
+	err := db.QueryRow("SELECT lat, lng FROM habitations WHERE id = ?", habitationID).Scan(&hLat, &hLng)
+	if err != nil {
+		http.Error(w, "Habitation not found", http.StatusNotFound)
+		return
+	}
+
+	var sLat, sLng float64
+	err = db.QueryRow("SELECT lat, lng FROM sites ORDER BY suitability_score DESC LIMIT 1").Scan(&sLat, &sLng)
+	if err != nil {
+		http.Error(w, "No sites available", http.StatusInternalServerError)
+		return
+	}
+
+	// Create a simple 3-point line representing a mock route
+	midLat := (hLat + sLat) / 2.0
+	midLng := (hLng + sLng) / 2.0
+
+	routeGeoJSON := map[string]interface{}{
+		"type": "FeatureCollection",
+		"features": []map[string]interface{}{
+			{
+				"type": "Feature",
+				"properties": map[string]interface{}{
+					"route_id": "route_1",
+					"risk_avoided": true,
+				},
+				"geometry": map[string]interface{}{
+					"type": "LineString",
+					"coordinates": [][]float64{
+						{hLng, hLat},
+						{midLng + 0.01, midLat + 0.01}, // Slight curve
+						{sLng, sLat},
+					},
+				},
+			},
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(routeGeoJSON)
+	log.Printf("[Backend] Returned mock route for habitation %s", habitationID)
+}

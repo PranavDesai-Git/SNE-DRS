@@ -44,6 +44,8 @@ func main() {
 	r.Get("/habitations", getHabitations)
 	r.Get("/risk-zones", getRiskZones)
 	r.Get("/sites", getSites)
+	r.Get("/reports", getReports)
+	r.Get("/routes", getRoutes)
 
 	// Serve the compiled Svelte frontend
 	fs := http.FileServer(http.Dir("../frontend/dist"))
