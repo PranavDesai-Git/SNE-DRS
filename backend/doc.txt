@@ -1,0 +1,138 @@
+package randomforest // import "github.com/malaschitz/randomForest"
+
+
+VARIABLES
+
+var (
+	NumWorkers = runtime.NumCPU() // max number of concurrent goroutines during training
+)
+var JSONNumbersPrecisionDecPlaces = 5
+
+FUNCTIONS
+
+func Boruta(x [][]float64, class []int, trees int, cycles int, threshold float64, recursive bool, verbose bool) ([]int, map[int]int)
+func BorutaDefault(x [][]float64, class []int) ([]int, map[int]int)
+    Boruta is smart algorithm for select important features with Random Forest.
+    It was developed in language R.
+
+    X [][]float64 - data for random forest. At least three features (columns)
+    are required. Class []int - classes for random forest (0,1,..) trees int
+    - number of trees used by Boruta algorithm. Is not need too big number of
+    trees. (50-200) cycles int - number of cycles (20-50) of Boruta algorithm.
+    threshold float64 - threshold for select feauters (0.05) recursive bool -
+    algorithm repeat process until all features are important verbose bool -
+    will print process of boruta algorithm.
+
+
+TYPES
+
+type Branch struct {
+	Attribute        int
+	Value            float64
+	IsLeaf           bool
+	LeafValue        []float64
+	Gini             float64
+	GiniGain         float64
+	Size             int
+	Branch0, Branch1 *Branch
+	Depth            int
+}
+    Branch is tree structure of branches
+
+type DeepForest struct {
+	Forest         *Forest
+	ForestDeep     Forest
+	Groves         []Forest
+	NGroves        int
+	NFeatures      int
+	NTrees         int
+	RandomFeatures [][]int
+	ResultFeatures [][]float64
+	Results        []float64
+}
+    DeepForest deep forest implementation where is standard forest, mini forests
+    (Groves) and final ForestDeep (Forest + Groves)
+
+func (dForest *DeepForest) Train(groves int, trees int, deepTrees int)
+    Train DeepForest with parameters of number of groves, number of trees in
+    groves, number of trees in final Deep Forest
+
+func (dForest *DeepForest) Vote(x []float64) []float64
+    Vote return result of DeepForest
+
+type Forest struct {
+	Data              ForestData // database for calculate trees
+	Trees             []Tree     // all generated trees
+	Features          int        // number of attributes
+	Classes           int        // number of classes
+	LeafSize          int        // leaf size
+	MFeatures         int        // attributes for choose proper split
+	NTrees            int        // number of trees
+	NSize             int        // len of data
+	MaxDepth          int        // max depth of forest
+	FeatureImportance []float64  //stats of FeatureImportance
+}
+    Forest je base class for whole forest with database, properties of Forest
+    and trees.
+
+func (forest *Forest) AddDataRow(data []float64, class int, max int, newTrees int, maxTrees int)
+    AddDataRow add new data data: new data row class: result max: max number of
+    data. Remove first if there is more datas. If max < 1 - unlimited newTrees:
+    number of trees after add data row maxTress: maximum number of trees
+
+    This feature support Continuous Random Forest
+
+func (forest *Forest) BuildDeepForest() DeepForest
+    BuildDeepForest create DeepForest from Forest
+
+func (forest *Forest) IsolationForest() (isolations []float64, mean float64, stddev float64)
+    Calculate outliers with Isolation Forest method
+
+func (forest Forest) MarshalJSON() ([]byte, error)
+    MarshalJSON implements json.Marshaler interface allowing for Forest
+    serialization in a standard way via json.Marshal function.
+
+func (forest *Forest) PrintFeatureImportance()
+    PrintFeatureImportance print list of features
+
+func (forest *Forest) Train(trees int)
+    Train run training process. Parameter is number of calculated trees.
+
+func (forest *Forest) TrainX(trees int)
+    TrainX Extremely randomized trees
+
+func (forest *Forest) UnmarshalJSON(b []byte) error
+    UnmarshalJSON implements the json.Unmarshaler method.
+
+func (forest *Forest) Vote(x []float64) []float64
+    Vote is used for calculate class in existed forest
+
+func (forest *Forest) WeightVote(x []float64) []float64
+    WeightVote use validation's weight for result
+
+type ForestData struct {
+	X     [][]float64 // All data are float64 numbers
+	Class []int       // Result should be int numbers 0,1,2,..
+}
+    ForestData contains database
+
+type IsolationForest struct {
+	X        [][]float64
+	Features int      // number of attributes
+	NTrees   int      // number of trees
+	NSize    int      // len of data
+	Sample   int      //sample size
+	Results  [][2]int //results - sum of depths and counts for every data
+}
+    Forest je base class for whole forest with database, properties of Forest
+    and trees.
+
+func (forest *IsolationForest) Train(trees int)
+    Train run training process. Parameter is number of calculated trees.
+
+type Tree struct {
+	Root       Branch
+	Validation float64
+}
+    Tree is one random tree in forest with Branch and validation number
+

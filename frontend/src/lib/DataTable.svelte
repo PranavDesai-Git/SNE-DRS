@@ -72,9 +72,11 @@
     width: 100%;
     overflow-x: auto;
     overflow-y: auto;
-    border: 1px solid var(--secondary);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 4px;
-    background-color: var(--background);
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     flex-shrink: 0;
     max-height: 400px;
   }

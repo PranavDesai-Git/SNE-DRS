@@ -74,7 +74,7 @@
   .breakdown {
     margin-top: 1rem;
     padding: 0.5rem;
-    background: color-mix(in srgb, var(--background), black 2%);
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 4px;
     margin-bottom: 1rem;
   }

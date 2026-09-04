@@ -18,12 +18,13 @@
 
 <style>
   .gov-card {
-    /* Mix the background with 4% black to perfectly simulate a recessed panel */
-    background-color: color-mix(in srgb, var(--background), black 4%);
-    border: 1px solid var(--secondary);
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08); /* Inward shadow */
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05); /* Inward shadow */
   }
 
   .card-header {

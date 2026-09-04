@@ -13,6 +13,7 @@
   let map;
   let leafletBase;
   let geoJsonLayer;
+  let pulseLayer;
   let waypointMarker;
   let siteMarkers = [];
   let habitationMarkers = [];
@@ -138,6 +139,33 @@
           );
         }
       }
+    }).addTo(map);
+
+    if (pulseLayer) {
+      pulseLayer.remove();
+    }
+    
+    pulseLayer = leafletBase.geoJSON(riskZones, {
+      style: function(feature) {
+        let speedClass = 'pulse-speed-moderate';
+        if (feature.properties && feature.properties.tier) {
+          switch(feature.properties.tier.toLowerCase()) {
+            case 'immediate': speedClass = 'pulse-speed-immediate'; break;
+            case 'short-term': speedClass = 'pulse-speed-short-term'; break;
+            case 'medium-term': speedClass = 'pulse-speed-medium-term'; break;
+            case 'moderate': speedClass = 'pulse-speed-moderate'; break;
+            case 'safe': speedClass = 'pulse-speed-safe'; break;
+          }
+        }
+        
+        return {
+          color: getColor(feature.properties.tier),
+          weight: 2,
+          fillColor: getColor(feature.properties.tier),
+          className: `pulse-ring-path ${speedClass}`
+        };
+      },
+      interactive: false
     }).addTo(map);
 
     if (riskZones.features && riskZones.features.length > 0) {

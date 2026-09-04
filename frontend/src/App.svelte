@@ -151,16 +151,6 @@
           />
         </div>
         {/if}
-
-        <Drawer bind:isOpen={showDataProvenance} title="Data Provenance" position="right">
-          <p>Elevation Source: CartoDEM via Bhoonidhi</p>
-          <p>Landslide Inventory: GSI NLSM</p>
-          <p>Flood Hazard: Bhuvan Web Services</p>
-          <p>Population: Census 2011 (Growth-adjusted)</p>
-          <div style="margin-top: 2rem;">
-            <Button fullWidth on:click={() => showDataProvenance = false}>Close</Button>
-          </div>
-        </Drawer>
       {:else if selectedMode === 'm2'}
         <h4>Pre-Disaster Routing</h4>
         <p class="subtitle">Waiting for threshold trigger...</p>
@@ -174,7 +164,7 @@
   </aside>
 
   <!-- Resizer Hotdog -->
-  <div class="resizer" on:mousedown={startResize} role="separator" tabindex="0">
+  <div class="resizer" style="left: {sidebarWidth}px;" on:mousedown={startResize} role="separator" tabindex="0">
     <div class="hotdog"></div>
   </div>
   {/if}
@@ -194,6 +184,17 @@
       <MapLegend />
     </div>
   </section>
+
+  <!-- Drawer placed outside so it is not trapped by backdrop-filter -->
+  <Drawer bind:isOpen={showDataProvenance} title="Data Provenance" position="right">
+    <p>Elevation Source: CartoDEM via Bhoonidhi</p>
+    <p>Landslide Inventory: GSI NLSM</p>
+    <p>Flood Hazard: Bhuvan Web Services</p>
+    <p>Population: Census 2011 (Growth-adjusted)</p>
+    <div style="margin-top: 2rem;">
+      <Button fullWidth on:click={() => showDataProvenance = false}>Close</Button>
+    </div>
+  </Drawer>
 </main>
 
 <style>
@@ -229,18 +230,23 @@
   }
 
   .resizer {
+    position: absolute;
+    top: 0;
+    height: 100vh;
     width: 12px;
-    background-color: color-mix(in srgb, var(--background), var(--secondary) 20%);
+    background-color: color-mix(in srgb, var(--background) 55%, transparent);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     cursor: col-resize;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1001;
-    border-right: 1px solid var(--secondary);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   .resizer:hover, .resizer:active {
-    background-color: color-mix(in srgb, var(--background), var(--secondary) 40%);
+    background-color: color-mix(in srgb, var(--background) 45%, transparent);
   }
 
   .hotdog {
@@ -253,7 +259,7 @@
   .hamburger {
     position: absolute;
     top: 1rem;
-    left: 1rem;
+    left: calc(var(--sidebar-width, 420px) + 2rem);
     z-index: 2000;
     background: var(--background);
     border: 1px solid var(--secondary);
