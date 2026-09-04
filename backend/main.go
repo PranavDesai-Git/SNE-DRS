@@ -37,6 +37,10 @@ func main() {
 	r.Get("/risk-zones", getRiskZones)
 	r.Get("/sites", getSites)
 
+	// Serve the compiled Svelte frontend
+	fs := http.FileServer(http.Dir("../frontend/dist"))
+	r.Handle("/*", http.StripPrefix("/", fs))
+
 	fmt.Println("Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", r)
 }
