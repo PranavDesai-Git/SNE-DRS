@@ -20,7 +20,6 @@
     font-size: 0.85rem;
     font-family: 'Poppins', sans-serif;
     user-select: none;
-    margin-bottom: 0.5rem;
   }
 
   .checkbox-container input {
@@ -36,12 +35,21 @@
     width: 18px;
     background-color: var(--background);
     border: 1px solid var(--secondary);
-    border-radius: 3px;
+    border-radius: 4px;
     margin-right: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.1s, border-color 0.1s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .checkbox-container:hover .checkmark {
+    border-color: var(--primary-dark);
+    transform: scale(1.05);
+  }
+
+  .checkbox-container:active .checkmark {
+    transform: scale(0.95);
   }
 
   .checkbox-container input:checked ~ .checkmark {

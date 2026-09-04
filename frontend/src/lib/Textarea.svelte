@@ -1,18 +1,15 @@
 <script>
   export let label = "";
   export let value = "";
-  export let options = []; // Array of { value, label }
+  export let placeholder = "";
+  export let rows = 4;
 </script>
 
 <div class="input-group">
   {#if label}
     <label>{label}</label>
   {/if}
-  <select bind:value class="gov-select">
-    {#each options as option}
-      <option value={option.value}>{option.label}</option>
-    {/each}
-  </select>
+  <textarea bind:value {placeholder} {rows} class="gov-textarea"></textarea>
 </div>
 
 <style>
@@ -27,7 +24,7 @@
     font-weight: 400;
   }
 
-  .gov-select {
+  .gov-textarea {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     padding: 0.5rem 0.75rem;
@@ -36,12 +33,12 @@
     background-color: var(--background);
     color: var(--text);
     outline: none;
+    resize: vertical;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    appearance: auto; /* Uses native dropdown arrow but styles the box */
   }
 
-  .gov-select:focus {
+  .gov-textarea:focus {
     border-color: var(--primary-dark);
+    box-shadow: 0 0 0 2px rgba(42, 71, 36, 0.2);
   }
 </style>

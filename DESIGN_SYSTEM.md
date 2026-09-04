@@ -53,6 +53,21 @@ We rejected the default dark mode and went with a muted, organic light/dark them
 ### 7. Form Controls (`TextInput`, `Select`, `Slider`, `ProgressBar`)
 * **Decision:** Form inputs use a subtle grey border that snaps to `--primary-dark` on focus. The `Slider` thumb must use the dark semantic `--color-habitation` (`#156932`) so it contrasts sharply against the grey track. The `ProgressBar` also uses `--primary-dark` for the fill.
 
+### 8. Extended Data & Form Primitives (`DataTable`, `Textarea`, `SearchInput`, `FileInput`, `RadioGroup`, `ButtonGroup`)
+* **Decision:** These extensions strictly follow the core form control styling. Inputs use a subtle grey border snapping to `--primary-dark` on focus. The `FileInput` wraps a hidden native input in the official `Button` to ensure consistent interaction physics.
+* **Text Colors:** All placeholder text, secondary icons (like search), and unselected text strictly use a 60% text-color mix (`color-mix(in srgb, var(--text) 60%, transparent)`) rather than `--secondary` to maintain high contrast compliance.
+
+### 9. Structural & Layout Overlays (`Drawer`, `DropdownMenu`, `Popover`)
+* **Decision:** Floating elements must not violate the strict "no-float" shadow rules on cards. They utilize a simple 1px `--secondary` border. `Drawer` uses a 40% opaque black backdrop (`rgba(0,0,0,0.4)`) and slides cleanly to hold Data Provenance details.
+
+### 10. Dashboard Feedback & Display (`Callout`, `Metric`, `Tag`, `EmptyState`, `ImageBlock`, `Stepper`)
+* **Decision:** Secondary inline alerts (`Callout`) cannot use colored left borders or mix pastels in an illegible way. They use an 85% transparent mix of `--primary` or `--color-moderate` backgrounds. 
+* **Empty States & Images:** The `EmptyState` uses a dashed border and `2%` black color-mixed background. `ImageBlock` also uses a `2%` recessed background for citizen-submitted photos.
+* **Loading States:** Abrupt spinner pop-ins are discouraged for large blocks. `Skeleton` provides an animated `--secondary` gradient pulse.
+
+### 11. Navigation & Mapping Helpers (`Breadcrumbs`, `Pagination`, `MapLegend`, `Icon`)
+* **Decision:** Navigation relies on semantic layout. `Pagination` buttons use standard borders. `Breadcrumbs` use the 60% text mix for separators. `MapLegend` strictly reads from the CSS variables mapped to risk tiers (`--color-redzone`, `--color-moderate`, etc.).
+
 ---
 
 ## 3. The "Strictly Don't" List
@@ -66,5 +81,6 @@ As you take over this system, if you do any of the following, I will come out of
 5. **DO NOT CHANGE BUTTON COLORS ON HOVER:** Buttons lift. They do not glow or change color.
 6. **DO NOT PILL-SHAPE BADGES:** Badges are not pills. They must have a 4px border radius.
 7. **DO NOT USE BROWSER DEFAULT SCROLLBARS:** Use the custom floating iOS-style scrollbars defined in `app.css`.
+8. **DO NOT USE SECONDARY COLORS FOR TEXT:** All text must derive its ink from the master `--text` variable. If you need muted text (like placeholders or breadcrumb separators), use an opacity `color-mix`, not the raw `--secondary` grey variable.
 
 Good luck, and keep the UI clean.

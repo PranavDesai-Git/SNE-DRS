@@ -23,8 +23,8 @@
   .gov-button {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
-    padding: 0.75rem 1.5rem;
-    border: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
     border-radius: 4px; /* Slight rounding for a professional look */
     background-color: var(--primary);
     color: var(--text); /* Use the global text color (#0f1510) */

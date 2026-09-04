@@ -24,7 +24,6 @@
     border-radius: 4px;
     overflow: hidden;
     box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08); /* Inward shadow */
-    margin-bottom: 1rem;
   }
 
   .card-header {

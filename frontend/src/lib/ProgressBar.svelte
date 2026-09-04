@@ -21,7 +21,7 @@
 <style>
   .progress-container {
     width: 100%;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
   }
 
   .progress-label {
@@ -37,7 +37,7 @@
     width: 100%;
     height: 8px;
     background-color: var(--secondary);
-    border-radius: 999px;
+    border-radius: 4px;
     overflow: hidden;
   }
 

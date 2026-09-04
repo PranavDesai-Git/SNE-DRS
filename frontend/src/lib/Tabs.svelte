@@ -18,8 +18,7 @@
 <style>
   .tabs-container {
     display: flex;
-    border-bottom: 2px solid var(--secondary);
-    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--secondary);
     gap: 1rem;
   }
 

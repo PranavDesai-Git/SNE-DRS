@@ -43,7 +43,7 @@
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: var(--secondary);
-    transition: .2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 22px;
   }
 
@@ -55,7 +55,7 @@
     left: 3px;
     bottom: 3px;
     background-color: var(--background);
-    transition: .2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 50%;
   }
 
@@ -65,5 +65,21 @@
 
   .switch.checked .slider:before {
     transform: translateX(18px);
+  }
+
+  .switch-container:hover .switch:not(.checked) .slider:before {
+    transform: scale(1.15);
+  }
+
+  .switch-container:active .switch:not(.checked) .slider:before {
+    transform: scale(0.9);
+  }
+
+  .switch-container:hover .switch.checked .slider:before {
+    transform: translateX(18px) scale(1.15);
+  }
+
+  .switch-container:active .switch.checked .slider:before {
+    transform: translateX(18px) scale(0.9);
   }
 </style>

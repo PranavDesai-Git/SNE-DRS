@@ -16,7 +16,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    margin-bottom: 1rem;
   }
   
   label {
@@ -33,7 +32,7 @@
     background-color: var(--background);
     color: var(--text);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .gov-input:focus {

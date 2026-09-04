@@ -20,7 +20,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;
   }
   
   .label-row {
@@ -40,7 +39,7 @@
     width: 100%;
     height: 6px;
     background: var(--secondary);
-    border-radius: 999px;
+    border-radius: 4px;
     outline: none;
   }
 
@@ -53,7 +52,15 @@
     background: var(--color-habitation); /* Used a darker green from the theme for contrast */
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: transform 0.1s ease;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+  }
+
+  .slider-thumb:hover {
+    transform: scale(1.25);
+  }
+
+  .slider-thumb:active {
+    transform: scale(0.9);
   }
 
   .gov-slider::-webkit-slider-thumb:hover {
