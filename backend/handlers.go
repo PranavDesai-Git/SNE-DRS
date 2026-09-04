@@ -7,7 +7,7 @@ import (
 )
 
 func getHabitations(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id, name, district, lat, lng, population, risk_score, tier, slope_score, twi_score, landcover_score, rainfall_score FROM habitations ORDER BY risk_score DESC")
+	rows, err := db.Query("SELECT id, name, district, lat, lng, population, risk_score, tier, slope_score, twi_score, landcover_score, rainfall_score, pct_elderly, pct_children FROM habitations ORDER BY risk_score DESC")
 	if err != nil {
 		http.Error(w, "Database query failed", http.StatusInternalServerError)
 		return
@@ -17,7 +17,7 @@ func getHabitations(w http.ResponseWriter, r *http.Request) {
 	var results []Habitation
 	for rows.Next() {
 		var h Habitation
-		err := rows.Scan(&h.ID, &h.Name, &h.District, &h.Lat, &h.Lng, &h.Population, &h.RiskScore, &h.Tier, &h.SlopeScore, &h.TWIScore, &h.LandcoverScore, &h.RainfallScore)
+		err := rows.Scan(&h.ID, &h.Name, &h.District, &h.Lat, &h.Lng, &h.Population, &h.RiskScore, &h.Tier, &h.SlopeScore, &h.TWIScore, &h.LandcoverScore, &h.RainfallScore, &h.PctElderly, &h.PctChildren)
 		if err != nil {
 			continue
 		}
@@ -86,7 +86,7 @@ func getRiskZones(w http.ResponseWriter, r *http.Request) {
 }
 
 func getSites(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id, name, lat, lng, capacity, suitability_score, land_cover_type, distance_to_road_km FROM sites ORDER BY suitability_score DESC")
+	rows, err := db.Query("SELECT id, name, lat, lng, capacity, suitability_score, land_cover_type, distance_to_road_km, current_rations, cots, medical_kits FROM sites ORDER BY suitability_score DESC")
 	if err != nil {
 		http.Error(w, "Database query failed", http.StatusInternalServerError)
 		return
@@ -96,7 +96,7 @@ func getSites(w http.ResponseWriter, r *http.Request) {
 	var results []Site
 	for rows.Next() {
 		var s Site
-		err := rows.Scan(&s.ID, &s.Name, &s.Lat, &s.Lng, &s.Capacity, &s.SuitabilityScore, &s.LandCoverType, &s.DistanceToRoadKm)
+		err := rows.Scan(&s.ID, &s.Name, &s.Lat, &s.Lng, &s.Capacity, &s.SuitabilityScore, &s.LandCoverType, &s.DistanceToRoadKm, &s.CurrentRations, &s.Cots, &s.MedicalKits)
 		if err != nil {
 			continue
 		}

@@ -26,6 +26,28 @@
   let sidebarCollapsed = false;
   let isResizing = false;
 
+  function handleSelectHabitation(hab) {
+    selectedHabitation = hab;
+    if (sites.length > 0) {
+      assignedSite = sites.find(s => s.capacity >= hab.population) || sites[0] || {};
+      console.log(`[Frontend] Re-assigned ${selectedHabitation.name} to ${assignedSite.name}`);
+    }
+  }
+
+  function exportCSV() {
+    const header = "id,name,district,lat,lng,population,risk_score,tier,slope_score,twi_score,landcover_score,rainfall_score\n";
+    const rows = habitations.map(h => 
+      `${h.id},${h.name},${h.district},${h.lat},${h.lng},${h.population},${h.risk_score},${h.tier},${h.slope_score},${h.twi_score},${h.landcover_score},${h.rainfall_score}`
+    ).join("\n");
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'habitations_priority.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function startResize() { isResizing = true; }
   function stopResize() { isResizing = false; }
   function onMouseMove(e) {
@@ -93,10 +115,19 @@
       {#if selectedMode === 'm1'}
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <h4>Habitation Risk Ranking</h4>
-          <Button on:click={() => showDataProvenance = true}>Data Provenance</Button>
+          <div style="display: flex; gap: 0.5rem;">
+            <Button on:click={exportCSV}>Export CSV</Button>
+            <Button on:click={() => showDataProvenance = true}>Data Provenance</Button>
+          </div>
         </div>
         
-        <DataTable headers={tableHeaders} data={habitations} sortable={true} />
+        <DataTable 
+          headers={tableHeaders} 
+          data={habitations} 
+          sortable={true} 
+          onRowClick={handleSelectHabitation}
+          selectedId={selectedHabitation?.id}
+        />
 
         {#if selectedHabitation && assignedSite}
         <div style="margin-top: 1rem;">
@@ -107,15 +138,25 @@
             siteName={assignedSite.name || 'None'}
             capacity={assignedSite.capacity || 0}
             distance={assignedSite.distance_to_road_km || 0}
+            slopeScore={selectedHabitation.slope_score}
+            rainfallScore={selectedHabitation.rainfall_score}
+            twiScore={selectedHabitation.twi_score}
+            landcoverScore={selectedHabitation.landcover_score}
+            pctElderly={selectedHabitation.pct_elderly}
+            pctChildren={selectedHabitation.pct_children}
+            population={selectedHabitation.population}
+            currentRations={assignedSite.current_rations}
+            cots={assignedSite.cots}
+            medicalKits={assignedSite.medical_kits}
           />
         </div>
         {/if}
 
         <Drawer bind:isOpen={showDataProvenance} title="Data Provenance" position="right">
-          <p><strong>Elevation Source:</strong> CartoDEM via Bhoonidhi</p>
-          <p><strong>Landslide Inventory:</strong> GSI NLSM</p>
-          <p><strong>Flood Hazard:</strong> Bhuvan Web Services</p>
-          <p><strong>Population:</strong> Census 2011 (Growth-adjusted)</p>
+          <p>Elevation Source: CartoDEM via Bhoonidhi</p>
+          <p>Landslide Inventory: GSI NLSM</p>
+          <p>Flood Hazard: Bhuvan Web Services</p>
+          <p>Population: Census 2011 (Growth-adjusted)</p>
           <div style="margin-top: 2rem;">
             <Button fullWidth on:click={() => showDataProvenance = false}>Close</Button>
           </div>
@@ -143,7 +184,12 @@
     <button class="hamburger" on:click={() => sidebarCollapsed = !sidebarCollapsed}>
       ☰
     </button>
-    <Map {riskZones} {sites} />
+    <Map 
+      {riskZones} 
+      {sites} 
+      {habitations} 
+      onHabitationClick={handleSelectHabitation} 
+    />
     <div class="legend-wrapper">
       <MapLegend />
     </div>
@@ -221,5 +267,35 @@
 
   .hamburger:hover {
     background: color-mix(in srgb, var(--background), var(--primary) 20%);
+  }
+
+  @media print {
+    :global(body) {
+      background: white !important;
+      color: black !important;
+    }
+    .resizer, .hamburger, .mode-selector, .legend-wrapper {
+      display: none !important;
+    }
+    .app-container {
+      display: block !important;
+      height: auto !important;
+    }
+    .sidebar {
+      width: 100% !important;
+      border: none !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    .map-container {
+      width: 100% !important;
+      height: 400px !important;
+      position: relative !important;
+      border: 1px solid #ccc;
+      margin-top: 2rem;
+    }
+    :global(.leaflet-control-container) {
+      display: none !important;
+    }
   }
 </style>

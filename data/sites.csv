@@ -1,11 +1,11 @@
-id,name,lat,lng,capacity,suitability_score,land_cover_type,distance_to_road_km
-SITE001,Bahjani Chapori,26.5210,91.0340,1200,7.8,grassland,1.2
-SITE002,Kalgachia Uplands,26.4780,90.9560,850,6.5,cropland,2.4
-SITE003,Nalbari Relief Center,26.4400,91.4400,2000,8.2,urban,0.5
-SITE004,Barpeta Town Hall,26.3200,91.0000,500,7.1,urban,0.1
-SITE005,Hajo Safe Zone,26.2500,91.5300,1500,7.9,grassland,1.8
-SITE006,Kamrup School,26.1500,91.4500,800,8.5,urban,0.2
-SITE007,Shillong Garrison,25.5700,91.8900,3000,9.5,urban,0.5
-SITE008,Nongpoh Transit Camp,25.9000,91.8800,1200,8.1,grassland,1.0
-SITE009,Dhubri Uplands,26.0200,89.9800,1000,6.8,cropland,3.1
-SITE010,Goalpara Shelter,26.1700,90.6200,2200,7.4,grassland,1.5
+id,name,lat,lng,capacity,suitability_score,land_cover_type,distance_to_road_km,current_rations,cots,medical_kits
+SITE001,Bahjani Chapori,26.5210,91.0340,1200,7.8,grassland,1.2,1000,800,50
+SITE002,Kalgachia Uplands,26.4780,90.9560,850,6.5,cropland,2.4,500,400,20
+SITE003,Nalbari Relief Center,26.4400,91.4400,2000,8.2,urban,0.5,2500,1800,150
+SITE004,Barpeta Town Hall,26.3200,91.0000,500,7.1,urban,0.1,500,500,30
+SITE005,Hajo Safe Zone,26.2500,91.5300,1500,7.9,grassland,1.8,1200,1000,80
+SITE006,Kamrup School,26.1500,91.4500,800,8.5,urban,0.2,800,600,40
+SITE007,Shillong Garrison,25.5700,91.8900,3000,9.5,urban,0.5,5000,3000,500
+SITE008,Nongpoh Transit Camp,25.9000,91.8800,1200,8.1,grassland,1.0,1500,1000,100
+SITE009,Dhubri Uplands,26.0200,89.9800,1000,6.8,cropland,3.1,800,500,30
+SITE010,Goalpara Shelter,26.1700,90.6200,2200,7.4,grassland,1.5,2000,1800,120

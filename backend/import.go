@@ -36,7 +36,9 @@ func createTables(db *sql.DB) {
 		slope_score FLOAT,
 		twi_score FLOAT,
 		landcover_score FLOAT,
-		rainfall_score FLOAT
+		rainfall_score FLOAT,
+		pct_elderly FLOAT,
+		pct_children FLOAT
 	);`
 	_, err := db.Exec(habitationsTable)
 	if err != nil {
@@ -52,7 +54,10 @@ func createTables(db *sql.DB) {
 		capacity INTEGER,
 		suitability_score FLOAT,
 		land_cover_type TEXT,
-		distance_to_road_km FLOAT
+		distance_to_road_km FLOAT,
+		current_rations INTEGER,
+		cots INTEGER,
+		medical_kits INTEGER
 	);`
 	_, err = db.Exec(sitesTable)
 	if err != nil {
@@ -89,7 +94,7 @@ func importHabitations(db *sql.DB, filepath string) {
 		log.Fatal("Failed to read CSV:", err)
 	}
 
-	stmt, err := db.Prepare("INSERT OR REPLACE INTO habitations (id, name, district, lat, lng, population, risk_score, tier, slope_score, twi_score, landcover_score, rainfall_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT OR REPLACE INTO habitations (id, name, district, lat, lng, population, risk_score, tier, slope_score, twi_score, landcover_score, rainfall_score, pct_elderly, pct_children) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -107,8 +112,10 @@ func importHabitations(db *sql.DB, filepath string) {
 		twi, _ := strconv.ParseFloat(record[9], 64)
 		landcover, _ := strconv.ParseFloat(record[10], 64)
 		rainfall, _ := strconv.ParseFloat(record[11], 64)
+		elderly, _ := strconv.ParseFloat(record[12], 64)
+		children, _ := strconv.ParseFloat(record[13], 64)
 
-		_, err := stmt.Exec(record[0], record[1], record[2], lat, lng, pop, riskScore, record[7], slope, twi, landcover, rainfall)
+		_, err := stmt.Exec(record[0], record[1], record[2], lat, lng, pop, riskScore, record[7], slope, twi, landcover, rainfall, elderly, children)
 		if err != nil {
 			log.Printf("Failed to insert habitation %s: %v\n", record[0], err)
 		}
@@ -130,7 +137,7 @@ func importSites(db *sql.DB, filepath string) {
 		log.Fatal("Failed to read CSV:", err)
 	}
 
-	stmt, err := db.Prepare("INSERT OR REPLACE INTO sites (id, name, lat, lng, capacity, suitability_score, land_cover_type, distance_to_road_km) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT OR REPLACE INTO sites (id, name, lat, lng, capacity, suitability_score, land_cover_type, distance_to_road_km, current_rations, cots, medical_kits) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -145,8 +152,11 @@ func importSites(db *sql.DB, filepath string) {
 		cap, _ := strconv.Atoi(record[4])
 		suit, _ := strconv.ParseFloat(record[5], 64)
 		dist, _ := strconv.ParseFloat(record[7], 64)
+		rations, _ := strconv.Atoi(record[8])
+		cots, _ := strconv.Atoi(record[9])
+		meds, _ := strconv.Atoi(record[10])
 
-		_, err := stmt.Exec(record[0], record[1], lat, lng, cap, suit, record[6], dist)
+		_, err := stmt.Exec(record[0], record[1], lat, lng, cap, suit, record[6], dist, rations, cots, meds)
 		if err != nil {
 			log.Printf("Failed to insert site %s: %v\n", record[0], err)
 		}

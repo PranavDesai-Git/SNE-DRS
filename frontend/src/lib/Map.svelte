@@ -6,6 +6,8 @@
   export let zoom = 8;
   export let riskZones = null;
   export let sites = [];
+  export let habitations = [];
+  export let onHabitationClick = null;
   
   let mapContainer;
   let map;
@@ -13,6 +15,7 @@
   let geoJsonLayer;
   let waypointMarker;
   let siteMarkers = [];
+  let habitationMarkers = [];
 
   function getColor(tier) {
     if (!tier) return '#8F7518';
@@ -40,6 +43,7 @@
 
     renderPolygons();
     renderSites();
+    renderHabitations();
 
     return () => {
       if (map) map.remove();
@@ -54,6 +58,37 @@
     renderSites();
   }
 
+  $: if (habitations) {
+    renderHabitations();
+  }
+
+  function renderHabitations() {
+    if (!map || !leafletBase || !habitations) return;
+    
+    habitationMarkers.forEach(m => m.remove());
+    habitationMarkers = [];
+
+    habitations.forEach(hab => {
+      const habIcon = leafletBase.divIcon({
+        className: 'custom-hab-icon',
+        html: `<div style="background-color: #0f1510; border: 2px solid white; border-radius: 50%; width: 14px; height: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.4);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+      });
+
+      const m = leafletBase.marker([hab.lat, hab.lng], { icon: habIcon })
+        .bindTooltip(`<h5>${hab.name}</h5>Pop: ${hab.population}`)
+        .addTo(map)
+        .on('click', () => {
+          if (onHabitationClick) {
+            onHabitationClick(hab);
+          }
+        });
+
+      habitationMarkers.push(m);
+    });
+  }
+
   function renderSites() {
     if (!map || !leafletBase || !sites) return;
     
@@ -64,13 +99,13 @@
     sites.forEach(site => {
       const safeIcon = leafletBase.divIcon({
         className: 'custom-safe-icon',
-        html: '<div style="background-color: #156932; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">+</div>',
+        html: '<div style="background-color: #156932; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">+</div>',
         iconSize: [24, 24],
         iconAnchor: [12, 12]
       });
 
       const m = leafletBase.marker([site.lat, site.lng], { icon: safeIcon })
-        .bindPopup(`<strong>Safe Relocation Site</strong><br/>${site.name}<br/>Capacity: ${site.capacity}`)
+        .bindPopup(`<h5>Safe Relocation Site</h5>${site.name}<br/>Capacity: ${site.capacity}`)
         .addTo(map);
 
       siteMarkers.push(m);
@@ -97,9 +132,9 @@
       onEachFeature: function(feature, layer) {
         if (feature.properties) {
           layer.bindPopup(
-            `<strong>Zone ID:</strong> ${feature.properties.zone_id}<br/>` +
-            `<strong>Tier:</strong> ${feature.properties.tier}<br/>` +
-            `<strong>Risk Score:</strong> ${feature.properties.risk_score}`
+            `<h5>Zone ID: ${feature.properties.zone_id}</h5>` +
+            `Tier: ${feature.properties.tier}<br/>` +
+            `Risk Score: ${feature.properties.risk_score}`
           );
         }
       }
@@ -129,7 +164,7 @@
           fillColor: '#87231E', // Red zone color
           fillOpacity: 1
         })
-        .bindPopup("<strong>High Risk Cluster</strong><br/>Click to zoom in")
+        .bindPopup("<h5>High Risk Cluster</h5>Click to zoom in")
         .addTo(map)
         .on('click', () => {
           map.setView(center, 12); // Zoom in past threshold

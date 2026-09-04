@@ -2,6 +2,8 @@
   export let headers = [];
   export let data = [];
   export let sortable = false;
+  export let onRowClick = null;
+  export let selectedId = null;
 
   let sortColumn = null;
   let sortAscending = true;
@@ -47,7 +49,11 @@
     </thead>
     <tbody>
       {#each sortedData as row}
-        <tr>
+        <tr 
+          on:click={() => onRowClick && onRowClick(row)}
+          class:selected={selectedId === row.id}
+          style={onRowClick ? "cursor: pointer;" : ""}
+        >
           {#each headers as header}
             <td>
               <slot name="cell" {row} {header}>
@@ -111,5 +117,9 @@
 
   tbody tr:last-child td {
     border-bottom: none;
+  }
+
+  tr.selected {
+    background-color: color-mix(in srgb, var(--background), var(--primary) 15%) !important;
   }
 </style>

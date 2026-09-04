@@ -15,6 +15,8 @@ type Habitation struct {
 	TWIScore       float64 `json:"twi_score"`
 	LandcoverScore float64 `json:"landcover_score"`
 	RainfallScore  float64 `json:"rainfall_score"`
+	PctElderly     float64 `json:"pct_elderly"`
+	PctChildren    float64 `json:"pct_children"`
 }
 
 type RiskZone struct {
@@ -35,6 +37,9 @@ type Site struct {
 	SuitabilityScore float64 `json:"suitability_score"`
 	LandCoverType    string  `json:"land_cover_type"`
 	DistanceToRoadKm float64 `json:"distance_to_road_km"`
+	CurrentRations   int     `json:"current_rations"`
+	Cots             int     `json:"cots"`
+	MedicalKits      int     `json:"medical_kits"`
 }
 
 type Report struct {
